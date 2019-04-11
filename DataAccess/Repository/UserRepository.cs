@@ -38,9 +38,15 @@ namespace DataAccess.Repository
             Save();
         }
 
-        public void UpdateUser(User user)
+        public void UpdateUser(User oldUser, User newUser)
         {
-            _context.Entry(user).State = EntityState.Modified;
+            oldUser.Firstname = newUser.Firstname;
+            oldUser.Lastname = newUser.Lastname;
+            oldUser.Email = newUser.Email;
+            oldUser.Password = newUser.Password;
+            oldUser.Level = newUser.Level;
+            
+            _context.Users.Update(oldUser);
             Save();
         }
 

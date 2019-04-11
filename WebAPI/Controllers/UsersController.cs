@@ -42,6 +42,7 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 return StatusCode(500, "Internal server error");
             }
         }
@@ -68,20 +69,65 @@ namespace WebAPI.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.ToString());
                 return StatusCode(500, "Internal server error");
             }
         }
 
         // PUT api/users/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public IActionResult Put(int id, [FromBody] User user)
         {
+            try
+            {
+                if (user == null)
+                {
+                    return BadRequest("Object is null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid model object");
+                }
+
+                var oldUser = _userRepository.GetUser(id);
+                if (oldUser == null)
+                {
+                    return NotFound();
+                }
+
+                _userRepository.UpdateUser(oldUser, user);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, "Internal server error");
+            }
         }
 
         // DELETE api/users/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public IActionResult Delete(int id)
         {
+            try
+            {
+                var oldUser = _userRepository.GetUser(id);
+                if (oldUser == null)
+                {
+                    return NotFound();
+                }
+
+                _userRepository.DeleteUser(id);
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, "Internal server error");
+            }
         }
     }
 }
