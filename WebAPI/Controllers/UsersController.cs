@@ -63,6 +63,12 @@ namespace WebAPI.Controllers
                     return BadRequest("Invalid model object");
                 }
 
+                var userWithSameEmail = _userRepository.GetUsers().First(u => u.Email == user.Email);
+                if (userWithSameEmail != null)
+                {
+                    return BadRequest("Duplicate Email");
+                }
+                
                 _userRepository.InsertUser(user);
 
                 return CreatedAtRoute("", new {id = user.Id}, user);
