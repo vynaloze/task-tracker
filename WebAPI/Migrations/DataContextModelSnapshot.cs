@@ -35,19 +35,15 @@ namespace WebAPI.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("AssignedToProjectId");
-
-                    b.Property<int?>("AssignedUserId");
+                    b.Property<DateTime?>("EndTime");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50);
 
+                    b.Property<DateTime?>("StartTime");
+
                     b.HasKey("Id");
-
-                    b.HasIndex("AssignedToProjectId");
-
-                    b.HasIndex("AssignedUserId");
 
                     b.ToTable("Tasks");
                 });
@@ -76,17 +72,6 @@ namespace WebAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("DataAccess.Model.Task", b =>
-                {
-                    b.HasOne("DataAccess.Model.Project", "AssignedToProject")
-                        .WithMany()
-                        .HasForeignKey("AssignedToProjectId");
-
-                    b.HasOne("DataAccess.Model.User", "AssignedUser")
-                        .WithMany()
-                        .HasForeignKey("AssignedUserId");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace DataAccess.Model
@@ -7,8 +8,8 @@ namespace DataAccess.Model
         [Required, MaxLength(50)] 
         public string Name { get; set; }
         
-        public User AssignedUser { get; set; }
+        public DateTime ?StartTime { get; set; }
         
-        public Project AssignedToProject { get; set; }
+        public DateTime ?EndTime { get; set; }
     }
 }

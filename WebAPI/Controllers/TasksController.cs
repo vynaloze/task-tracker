@@ -5,40 +5,41 @@ using System.Threading.Tasks;
 using DataAccess.Model;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Task = DataAccess.Model.Task;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersController : ControllerBase
+    public class TasksController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly ITaskRepository _taskRepository;
 
-        public UsersController(IUserRepository userRepository)
+        public TasksController(ITaskRepository taskRepository)
         {
-            _userRepository = userRepository;
+            _taskRepository = taskRepository;
         }
 
-        // GET api/users
+        // GET api/Tasks
         [HttpGet]
-        public ActionResult<IEnumerable<User>> Get()
+        public ActionResult<IEnumerable<Task>> Get()
         {
-            return Ok(_userRepository.GetUsers());
+            return Ok(_taskRepository.GetTasks());
         }
 
-        // GET api/users/5
+        // GET api/Tasks/5
         [HttpGet("{id}")]
-        public ActionResult<User> Get(int id)
+        public ActionResult<Task> Get(int id)
         {
             try
             {
-                var user = _userRepository.GetUser(id);
-                if (user == null)
+                var task = _taskRepository.GetTask(id);
+                if (task == null)
                 {
                     return NotFound();
                 }
 
-                return Ok(user);
+                return Ok(task);
             }
             catch (Exception ex)
             {
@@ -47,13 +48,13 @@ namespace WebAPI.Controllers
             }
         }
 
-        // POST api/users
+        // POST api/Tasks
         [HttpPost]
-        public IActionResult Post([FromBody] User user)
+        public IActionResult Post([FromBody] Task task)
         {
             try
             {
-                if (user == null)
+                if (task == null)
                 {
                     return BadRequest("Object is null");
                 }
@@ -63,15 +64,9 @@ namespace WebAPI.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                var existsDuplicate = _userRepository.GetUsers().Any(u => u.Email == user.Email);
-                if (existsDuplicate)
-                {
-                    return BadRequest("Duplicate Email");
-                }
-                
-                _userRepository.InsertUser(user);
+                _taskRepository.InsertTask(task);
 
-                return CreatedAtRoute("", new {id = user.Id}, user);
+                return CreatedAtRoute("", new {id = task.Id}, task);
             }
             catch (Exception ex)
             {
@@ -80,13 +75,13 @@ namespace WebAPI.Controllers
             }
         }
 
-        // PUT api/users/5
+        // PUT api/Tasks/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] User user)
+        public IActionResult Put(int id, [FromBody] Task task)
         {
             try
             {
-                if (user == null)
+                if (task == null)
                 {
                     return BadRequest("Object is null");
                 }
@@ -96,13 +91,13 @@ namespace WebAPI.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                var oldUser = _userRepository.GetUser(id);
-                if (oldUser == null)
+                var oldTask = _taskRepository.GetTask(id);
+                if (oldTask == null)
                 {
                     return NotFound();
                 }
 
-                _userRepository.UpdateUser(oldUser, user);
+                _taskRepository.UpdateTask(oldTask, task);
 
                 return NoContent();
             }
@@ -113,19 +108,19 @@ namespace WebAPI.Controllers
             }
         }
 
-        // DELETE api/users/5
+        // DELETE api/Tasks/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             try
             {
-                var oldUser = _userRepository.GetUser(id);
-                if (oldUser == null)
+                var oldTask = _taskRepository.GetTask(id);
+                if (oldTask == null)
                 {
                     return NotFound();
                 }
 
-                _userRepository.DeleteUser(id);
+                _taskRepository.DeleteTask(id);
 
                 return NoContent();
             }

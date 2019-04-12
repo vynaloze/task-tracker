@@ -34,6 +34,7 @@ namespace WebAPI
                 (options => options.UseSqlite(connection, b => b.MigrationsAssembly("WebAPI")));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
+            services.AddScoped<ITaskRepository, TaskRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
