@@ -35,6 +35,7 @@ namespace WebAPI
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<ITaskRepository, TaskRepository>();
+            services.AddScoped<IAssociationRepository, AssociationRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
