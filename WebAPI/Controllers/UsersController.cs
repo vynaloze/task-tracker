@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataAccess.Model;
 using DataAccess.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Users;
 
 namespace WebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
@@ -24,8 +26,13 @@ namespace WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> Get()
         {
-            var users = await _userService.GetAll();
-            return Ok(users);
+            if (User.IsInRole("5"))
+            {
+                var users = await _userService.GetAll();
+                return Ok(users);
+            }
+
+            return Forbid();
         }
 
         // GET api/users/5
@@ -40,7 +47,12 @@ namespace WebAPI.Controllers
                     return NotFound();
                 }
 
-                return Ok(user);
+                if (User.Identity.Name == user.Email || User.IsInRole("5"))
+                {
+                    return Ok(user);
+                }
+
+                return Forbid();
             }
             catch (Exception ex)
             {
@@ -49,6 +61,7 @@ namespace WebAPI.Controllers
             }
         }
 
+        [AllowAnonymous]
         // POST api/users
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] User user)
@@ -91,6 +104,11 @@ namespace WebAPI.Controllers
                     return BadRequest("Object is null");
                 }
 
+                if (user.Email != User.Identity.Name)
+                {
+                    return Forbid();
+                }
+
                 if (!ModelState.IsValid)
                 {
                     return BadRequest("Invalid model object");
@@ -117,6 +135,17 @@ namespace WebAPI.Controllers
         {
             try
             {
+                var user = await _userService.GetUser(id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                if (User.Identity.Name != user.Email && !User.IsInRole("5"))
+                {
+                    return Forbid();
+                }
+
                 var deleted = await _userService.DeleteUser(id);
                 if (!deleted)
                 {
