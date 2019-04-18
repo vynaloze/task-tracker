@@ -1,39 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DataAccess.Model;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Mvc;
-using Task = DataAccess.Model.Task;
 
 namespace WebAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TasksController : ControllerBase
+    public class ToDosController : ControllerBase
     {
-        private readonly ITaskRepository _taskRepository;
+        private readonly IToDoRepository _toDoRepository;
 
-        public TasksController(ITaskRepository taskRepository)
+        public ToDosController(IToDoRepository toDoRepository)
         {
-            _taskRepository = taskRepository;
+            _toDoRepository = toDoRepository;
         }
 
-        // GET api/Tasks
+        // GET api/ToDos
         [HttpGet]
-        public ActionResult<IEnumerable<Task>> Get()
+        public ActionResult<IEnumerable<ToDo>> Get()
         {
-            return Ok(_taskRepository.GetTasks());
+            return Ok(_toDoRepository.GetToDos());
         }
 
-        // GET api/Tasks/5
+        // GET api/ToDos/5
         [HttpGet("{id}")]
-        public ActionResult<Task> Get(int id)
+        public ActionResult<ToDo> Get(int id)
         {
             try
             {
-                var task = _taskRepository.GetTask(id);
+                var task = _toDoRepository.GetToDo(id);
                 if (task == null)
                 {
                     return NotFound();
@@ -48,13 +45,13 @@ namespace WebAPI.Controllers
             }
         }
 
-        // POST api/Tasks
+        // POST api/ToDos
         [HttpPost]
-        public IActionResult Post([FromBody] Task task)
+        public IActionResult Post([FromBody] ToDo toDo)
         {
             try
             {
-                if (task == null)
+                if (toDo == null)
                 {
                     return BadRequest("Object is null");
                 }
@@ -64,9 +61,9 @@ namespace WebAPI.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                _taskRepository.InsertTask(task);
+                _toDoRepository.InsertTodo(toDo);
 
-                return CreatedAtRoute("", new {id = task.Id}, task);
+                return CreatedAtRoute("", new {id = toDo.Id}, toDo);
             }
             catch (Exception ex)
             {
@@ -75,13 +72,13 @@ namespace WebAPI.Controllers
             }
         }
 
-        // PUT api/Tasks/5
+        // PUT api/ToDos/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] Task task)
+        public IActionResult Put(int id, [FromBody] ToDo toDo)
         {
             try
             {
-                if (task == null)
+                if (toDo == null)
                 {
                     return BadRequest("Object is null");
                 }
@@ -91,13 +88,13 @@ namespace WebAPI.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                var oldTask = _taskRepository.GetTask(id);
+                var oldTask = _toDoRepository.GetToDo(id);
                 if (oldTask == null)
                 {
                     return NotFound();
                 }
 
-                _taskRepository.UpdateTask(oldTask, task);
+                _toDoRepository.UpdateTodo(oldTask, toDo);
 
                 return NoContent();
             }
@@ -108,19 +105,19 @@ namespace WebAPI.Controllers
             }
         }
 
-        // DELETE api/Tasks/5
+        // DELETE api/ToDos/5
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             try
             {
-                var oldTask = _taskRepository.GetTask(id);
+                var oldTask = _toDoRepository.GetToDo(id);
                 if (oldTask == null)
                 {
                     return NotFound();
                 }
 
-                _taskRepository.DeleteTask(id);
+                _toDoRepository.DeleteTodo(id);
 
                 return NoContent();
             }

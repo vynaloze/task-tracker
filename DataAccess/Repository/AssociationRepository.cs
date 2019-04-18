@@ -17,7 +17,7 @@ namespace DataAccess.Repository
         public IEnumerable<Association> GetAssociations()
         {
             return _context.Associations
-                .Include(a => a.Task)
+                .Include(a => a.ToDo)
                 .Include(a => a.Project)
                 .Include(a => a.User)
                 .ToList();
@@ -26,7 +26,7 @@ namespace DataAccess.Repository
         public Association GetAssociation(int id)
         {
             return _context.Associations
-                .Include(a => a.Task)
+                .Include(a => a.ToDo)
                 .Include(a => a.Project)
                 .Include(a => a.User)
                 .FirstOrDefault(a => a.Id == id);
@@ -47,7 +47,7 @@ namespace DataAccess.Repository
 
         public void UpdateAssociation(Association oldAssociation, Association newAssociation)
         {
-            oldAssociation.Task = newAssociation.Task;
+            oldAssociation.ToDo = newAssociation.ToDo;
             oldAssociation.Project = newAssociation.Project;
             oldAssociation.User = newAssociation.User;
             

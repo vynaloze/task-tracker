@@ -5,7 +5,7 @@ namespace DataAccess.Model
     public class Association : BaseEntity
     {
         [Required]
-        public Task Task { get; set; }
+        public ToDo ToDo { get; set; }
         
         public Project Project { get; set; }
         

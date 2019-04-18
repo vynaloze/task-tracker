@@ -4,45 +4,45 @@ using DataAccess.Model;
 
 namespace DataAccess.Repository
 {
-    public class TaskRepository: ITaskRepository
+    public class ToDoRepository: IToDoRepository
     {
         private readonly DataContext _context;
 
-        public TaskRepository(DataContext dataContext)
+        public ToDoRepository(DataContext dataContext)
         {
             _context = dataContext;
         }
 
-        public IEnumerable<Task> GetTasks()
+        public IEnumerable<ToDo> GetToDos()
         {
             return _context.Tasks.ToList();
         }
 
-        public Task GetTask(int id)
+        public ToDo GetToDo(int id)
         {
             return _context.Tasks.Find(id);
         }
 
-        public void InsertTask(Task task)
+        public void InsertTodo(ToDo toDo)
         {
-            _context.Tasks.Add(task);
+            _context.Tasks.Add(toDo);
             Save();
         }
 
-        public void DeleteTask(int id)
+        public void DeleteTodo(int id)
         {
             var task = _context.Tasks.Find(id);
             _context.Tasks.Remove(task);
             Save();
         }
 
-        public void UpdateTask(Task oldTask, Task newTask)
+        public void UpdateTodo(ToDo oldToDo, ToDo newToDo)
         {
-            oldTask.Name = newTask.Name;
-            oldTask.StartTime = newTask.StartTime;
-            oldTask.EndTime = newTask.EndTime;
+            oldToDo.Name = newToDo.Name;
+            oldToDo.StartTime = newToDo.StartTime;
+            oldToDo.EndTime = newToDo.EndTime;
             
-            _context.Tasks.Update(oldTask);
+            _context.Tasks.Update(oldToDo);
             Save();
         }
 

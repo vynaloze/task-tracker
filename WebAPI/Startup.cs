@@ -26,7 +26,7 @@ namespace WebAPI
             
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo{ Title = "Task Tracker API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo{ Title = "ToDo Tracker API", Version = "v1" });
             });
             
             var connection = "Data Source=tasktracker.db";
@@ -34,7 +34,7 @@ namespace WebAPI
                 (options => options.UseSqlite(connection, b => b.MigrationsAssembly("WebAPI")));
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
-            services.AddScoped<ITaskRepository, TaskRepository>();
+            services.AddScoped<IToDoRepository, ToDoRepository>();
             services.AddScoped<IAssociationRepository, AssociationRepository>();
         }
 
@@ -61,7 +61,7 @@ namespace WebAPI
             // specifying the Swagger JSON endpoint.
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Task Tracker API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDo Tracker API V1");
             });
 
         }

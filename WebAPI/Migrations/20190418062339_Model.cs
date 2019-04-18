@@ -1,18 +1,47 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WebAPI.Migrations
 {
-    public partial class Associations : Migration
+    public partial class Model : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Projects",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(maxLength: 50, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Projects", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Tasks",
+                columns: table => new
+                {
+                    Id = table.Column<int>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    StartTime = table.Column<DateTime>(nullable: true),
+                    EndTime = table.Column<DateTime>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tasks", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Associations",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    TaskId = table.Column<int>(nullable: false),
+                    ToDoId = table.Column<int>(nullable: false),
                     ProjectId = table.Column<int>(nullable: true),
                     UserId = table.Column<int>(nullable: true)
                 },
@@ -26,8 +55,8 @@ namespace WebAPI.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_Associations_Tasks_TaskId",
-                        column: x => x.TaskId,
+                        name: "FK_Associations_Tasks_ToDoId",
+                        column: x => x.ToDoId,
                         principalTable: "Tasks",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -45,9 +74,9 @@ namespace WebAPI.Migrations
                 column: "ProjectId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Associations_TaskId",
+                name: "IX_Associations_ToDoId",
                 table: "Associations",
-                column: "TaskId");
+                column: "ToDoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Associations_UserId",
@@ -59,6 +88,12 @@ namespace WebAPI.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Associations");
+
+            migrationBuilder.DropTable(
+                name: "Projects");
+
+            migrationBuilder.DropTable(
+                name: "Tasks");
         }
     }
 }

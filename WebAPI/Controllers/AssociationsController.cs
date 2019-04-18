@@ -12,15 +12,15 @@ namespace WebAPI.Controllers
     public class AssociationsController : ControllerBase
     {
         private readonly IAssociationRepository _associationRepository;
-        private readonly ITaskRepository _taskRepository;
+        private readonly IToDoRepository _toDoRepository;
         private readonly IUserRepository _userRepository;
         private readonly IProjectRepository _projectRepository;
 
-        public AssociationsController(IAssociationRepository associationRepository, ITaskRepository taskRepository,
+        public AssociationsController(IAssociationRepository associationRepository, IToDoRepository toDoRepository,
             IUserRepository userRepository, IProjectRepository projectRepository)
         {
             _associationRepository = associationRepository;
-            _taskRepository = taskRepository;
+            _toDoRepository = toDoRepository;
             _userRepository = userRepository;
             _projectRepository = projectRepository;
         }
@@ -53,26 +53,26 @@ namespace WebAPI.Controllers
             }
         }
 
-        // POST api/Associations/Task/5?user=2&project=1
-        [HttpPost("Task/{taskId}")]
+        // POST api/Associations/ToDo/5?user=2&project=1
+        [HttpPost("ToDo/{taskId}")]
         public IActionResult Post(int taskId, int? user, int? project)
         {
             try
             {
-                var existsDuplicate = _associationRepository.GetAssociations().Any(a => a.Task.Id == taskId);
+                var existsDuplicate = _associationRepository.GetAssociations().Any(a => a.ToDo.Id == taskId);
                 if (existsDuplicate)
                 {
-                    return BadRequest("Such task is already assigned. Use PATCH to modify it");
+                    return BadRequest("Such toDo is already assigned. Use PATCH to modify it");
                 }
                 
                 var newAssociation = new Association();
-                var task = _taskRepository.GetTask(taskId);
+                var task = _toDoRepository.GetToDo(taskId);
                 if (task == null)
                 {
-                    return NotFound("Task not found");
+                    return NotFound("ToDo not found");
                 }
 
-                newAssociation.Task = task;
+                newAssociation.ToDo = task;
                 
                 if (user.HasValue)
                 {
@@ -107,19 +107,19 @@ namespace WebAPI.Controllers
             }
         }
 
-        // PATCH api/Associations/Task/5?user=2&project=1
-        [HttpPatch("Task/{taskId}")]
+        // PATCH api/Associations/ToDo/5?user=2&project=1
+        [HttpPatch("ToDo/{taskId}")]
         public IActionResult Put(int taskId, int? user, int? project)
         {
             try
             {
-                var oldAssociation = _associationRepository.GetAssociations().FirstOrDefault(a => a.Task.Id == taskId);
+                var oldAssociation = _associationRepository.GetAssociations().FirstOrDefault(a => a.ToDo.Id == taskId);
                 if (oldAssociation == null)
                 {
-                    return NotFound("Association with such task not found");
+                    return NotFound("Association with such toDo not found");
                 }
 
-                var newAssociation = new Association{Task = oldAssociation.Task};
+                var newAssociation = new Association{ToDo = oldAssociation.ToDo};
                 if (user.HasValue)
                 {
                     var dbUser = _userRepository.GetUser(user.Value);

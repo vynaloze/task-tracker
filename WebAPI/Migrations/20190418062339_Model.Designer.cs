@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190412130308_Associations")]
-    partial class Associations
+    [Migration("20190418062339_Model")]
+    partial class Model
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,7 +25,7 @@ namespace WebAPI.Migrations
 
                     b.Property<int?>("ProjectId");
 
-                    b.Property<int>("TaskId");
+                    b.Property<int>("ToDoId");
 
                     b.Property<int?>("UserId");
 
@@ -33,7 +33,7 @@ namespace WebAPI.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("TaskId");
+                    b.HasIndex("ToDoId");
 
                     b.HasIndex("UserId");
 
@@ -54,7 +54,7 @@ namespace WebAPI.Migrations
                     b.ToTable("Projects");
                 });
 
-            modelBuilder.Entity("DataAccess.Model.Task", b =>
+            modelBuilder.Entity("DataAccess.Model.ToDo", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -104,9 +104,9 @@ namespace WebAPI.Migrations
                         .WithMany()
                         .HasForeignKey("ProjectId");
 
-                    b.HasOne("DataAccess.Model.Task", "Task")
+                    b.HasOne("DataAccess.Model.ToDo", "ToDo")
                         .WithMany()
-                        .HasForeignKey("TaskId")
+                        .HasForeignKey("ToDoId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("DataAccess.Model.User", "User")
