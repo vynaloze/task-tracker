@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DataAccess.Model;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Service.Users;
 
 namespace WebAPI.Controllers
 {
@@ -12,27 +13,28 @@ namespace WebAPI.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
 
-        public UsersController(IUserRepository userRepository)
+        public UsersController(IUserService userService)
         {
-            _userRepository = userRepository;
+            _userService = userService;
         }
 
         // GET api/users
         [HttpGet]
-        public ActionResult<IEnumerable<User>> Get()
+        public async Task<ActionResult<IEnumerable<User>>> Get()
         {
-            return Ok(_userRepository.GetUsers());
+            var users = await _userService.GetAll();
+            return Ok(users);
         }
 
         // GET api/users/5
         [HttpGet("{id}")]
-        public ActionResult<User> Get(int id)
+        public async Task<ActionResult<User>> Get(int id)
         {
             try
             {
-                var user = _userRepository.GetUser(id);
+                var user = await _userService.GetUser(id);
                 if (user == null)
                 {
                     return NotFound();
@@ -49,7 +51,7 @@ namespace WebAPI.Controllers
 
         // POST api/users
         [HttpPost]
-        public IActionResult Post([FromBody] User user)
+        public async Task<IActionResult> Post([FromBody] User user)
         {
             try
             {
@@ -63,15 +65,13 @@ namespace WebAPI.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                var existsDuplicate = _userRepository.GetUsers().Any(u => u.Email == user.Email);
-                if (existsDuplicate)
+                var created = await _userService.RegisterUser(user);
+                if (created == null)
                 {
                     return BadRequest("Duplicate Email");
                 }
-                
-                _userRepository.InsertUser(user);
 
-                return CreatedAtRoute("", new {id = user.Id}, user);
+                return CreatedAtRoute("", new {id = created.Id}, created);
             }
             catch (Exception ex)
             {
@@ -82,7 +82,7 @@ namespace WebAPI.Controllers
 
         // PUT api/users/5
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody] User user)
+        public async Task<IActionResult> Put(int id, [FromBody] User user)
         {
             try
             {
@@ -96,13 +96,11 @@ namespace WebAPI.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                var oldUser = _userRepository.GetUser(id);
-                if (oldUser == null)
+                var updated = await _userService.SaveUserData(id, user);
+                if (!updated)
                 {
                     return NotFound();
                 }
-
-                _userRepository.UpdateUser(oldUser, user);
 
                 return NoContent();
             }
@@ -115,17 +113,15 @@ namespace WebAPI.Controllers
 
         // DELETE api/users/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var oldUser = _userRepository.GetUser(id);
-                if (oldUser == null)
+                var deleted = await _userService.DeleteUser(id);
+                if (!deleted)
                 {
                     return NotFound();
                 }
-
-                _userRepository.DeleteUser(id);
 
                 return NoContent();
             }

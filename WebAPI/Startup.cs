@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Service.Users;
 
 namespace WebAPI
 {
@@ -36,6 +37,8 @@ namespace WebAPI
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IToDoRepository, ToDoRepository>();
             services.AddScoped<IAssociationRepository, AssociationRepository>();
+            
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
