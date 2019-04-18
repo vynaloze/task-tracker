@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using System.Threading.Tasks;
 using DataAccess.Model;
 using DataAccess.Repository;
 using Microsoft.AspNetCore.Mvc;
+using Service.Associations;
 
 namespace WebAPI.Controllers
 {
@@ -11,34 +14,28 @@ namespace WebAPI.Controllers
     [ApiController]
     public class AssociationsController : ControllerBase
     {
-        private readonly IAssociationRepository _associationRepository;
-        private readonly IToDoRepository _toDoRepository;
-        private readonly IUserRepository _userRepository;
-        private readonly IProjectRepository _projectRepository;
+        private readonly IAssociationService _associationService;
 
-        public AssociationsController(IAssociationRepository associationRepository, IToDoRepository toDoRepository,
-            IUserRepository userRepository, IProjectRepository projectRepository)
+        public AssociationsController(IAssociationService associationService)
         {
-            _associationRepository = associationRepository;
-            _toDoRepository = toDoRepository;
-            _userRepository = userRepository;
-            _projectRepository = projectRepository;
+            _associationService = associationService;
         }
 
         // GET api/Associations
         [HttpGet]
-        public ActionResult<IEnumerable<Association>> Get()
+        public async Task<ActionResult<IEnumerable<Association>>> Get()
         {
-            return Ok(_associationRepository.GetAssociations());
+            var associations = await _associationService.Get();
+            return Ok(associations);
         }
 
         // GET api/Associations/5
         [HttpGet("{id}")]
-        public ActionResult<Association> Get(int id)
+        public async Task<ActionResult<Association>> Get(int id)
         {
             try
             {
-                var association = _associationRepository.GetAssociation(id);
+                var association = await _associationService.Get(id);
                 if (association == null)
                 {
                     return NotFound();
@@ -54,51 +51,21 @@ namespace WebAPI.Controllers
         }
 
         // POST api/Associations/ToDo/5?user=2&project=1
-        [HttpPost("ToDo/{taskId}")]
-        public IActionResult Post(int taskId, int? user, int? project)
+        [HttpPost("ToDo/{todoId}")]
+        public async Task<IActionResult> Post(int todoId, int? user, int? project)
         {
             try
             {
-                var existsDuplicate = _associationRepository.GetAssociations().Any(a => a.ToDo.Id == taskId);
-                if (existsDuplicate)
-                {
-                    return BadRequest("Such toDo is already assigned. Use PATCH to modify it");
-                }
-                
-                var newAssociation = new Association();
-                var task = _toDoRepository.GetToDo(taskId);
-                if (task == null)
-                {
-                    return NotFound("ToDo not found");
-                }
-
-                newAssociation.ToDo = task;
-                
-                if (user.HasValue)
-                {
-                    var dbUser = _userRepository.GetUser(user.Value);
-                    if (dbUser == null)
-                    {
-                        return NotFound("User not found");
-                    }
-
-                    newAssociation.User = dbUser;
-                }
-
-                if (project.HasValue)
-                {
-                    var dbProject = _projectRepository.GetProject(project.Value);
-                    if (dbProject == null)
-                    {
-                        return NotFound("Project not found");
-                    }
-
-                    newAssociation.Project = dbProject;
-                }
-
-                _associationRepository.InsertAssociation(newAssociation);
-
-                return CreatedAtRoute("", new {id = newAssociation.Id}, newAssociation);
+                var association = await _associationService.Create(todoId, user, project);
+                return CreatedAtRoute("", new {id = association.Id}, association);
+            }
+            catch (DuplicateNameException ex)
+            {
+                return BadRequest(ex.Message + " Use PATCH to modify it");
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -108,43 +75,17 @@ namespace WebAPI.Controllers
         }
 
         // PATCH api/Associations/ToDo/5?user=2&project=1
-        [HttpPatch("ToDo/{taskId}")]
-        public IActionResult Put(int taskId, int? user, int? project)
+        [HttpPatch("ToDo/{todoId}")]
+        public async Task<IActionResult> Put(int todoId, int? user, int? project)
         {
             try
             {
-                var oldAssociation = _associationRepository.GetAssociations().FirstOrDefault(a => a.ToDo.Id == taskId);
-                if (oldAssociation == null)
-                {
-                    return NotFound("Association with such toDo not found");
-                }
-
-                var newAssociation = new Association{ToDo = oldAssociation.ToDo};
-                if (user.HasValue)
-                {
-                    var dbUser = _userRepository.GetUser(user.Value);
-                    if (dbUser == null)
-                    {
-                        return NotFound("User not found");
-                    }
-
-                    newAssociation.User = dbUser;
-                }
-
-                if (project.HasValue)
-                {
-                    var dbProject = _projectRepository.GetProject(project.Value);
-                    if (dbProject == null)
-                    {
-                        return NotFound("Project not found");
-                    }
-
-                    newAssociation.Project = dbProject;
-                }
-
-                _associationRepository.UpdateAssociation(oldAssociation, newAssociation);
-
+                await _associationService.Update(todoId, user, project);
                 return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(ex.Message);
             }
             catch (Exception ex)
             {
@@ -155,18 +96,11 @@ namespace WebAPI.Controllers
 
         // DELETE api/Associations/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var oldAssociation = _associationRepository.GetAssociation(id);
-                if (oldAssociation == null)
-                {
-                    return NotFound();
-                }
-
-                _associationRepository.DeleteAssociation(id);
-
+                await _associationService.Delete(id);
                 return NoContent();
             }
             catch (Exception ex)

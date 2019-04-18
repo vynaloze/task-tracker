@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
+using Service.Associations;
 using Service.Users;
 using WebAPI.Auth;
 
@@ -42,6 +43,7 @@ namespace WebAPI
             services.AddScoped<IAssociationRepository, AssociationRepository>();
             
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IAssociationService, AssociationService>();
                 
             services.AddAuthentication("BasicAuthentication")
                 .AddScheme<AuthenticationSchemeOptions,BasicAuthenticationHandler>("BasicAuthentication",null);
