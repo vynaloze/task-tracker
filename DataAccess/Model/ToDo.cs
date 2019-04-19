@@ -11,5 +11,18 @@ namespace DataAccess.Model
         public DateTime ?StartTime { get; set; }
         
         public DateTime ?EndTime { get; set; }
+        
+        public User User { get; set; }
+        
+        public Project Project { get; set; }
+
+        public ToDo Clone()
+        {
+            return new ToDo
+            {
+                Id = this.Id, Name = this.Name, User = this.User, Project = this.Project, StartTime = this.StartTime,
+                EndTime = this.EndTime
+            };
+        }
     }
 }

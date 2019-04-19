@@ -16,28 +16,6 @@ namespace WebAPI.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.2-servicing-10034");
 
-            modelBuilder.Entity("DataAccess.Model.Association", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("ProjectId");
-
-                    b.Property<int>("ToDoId");
-
-                    b.Property<int?>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("ToDoId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Associations");
-                });
-
             modelBuilder.Entity("DataAccess.Model.Project", b =>
                 {
                     b.Property<int>("Id")
@@ -63,9 +41,17 @@ namespace WebAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(50);
 
+                    b.Property<int?>("ProjectId");
+
                     b.Property<DateTime?>("StartTime");
 
+                    b.Property<int?>("UserId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Tasks");
                 });
@@ -96,16 +82,11 @@ namespace WebAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("DataAccess.Model.Association", b =>
+            modelBuilder.Entity("DataAccess.Model.ToDo", b =>
                 {
                     b.HasOne("DataAccess.Model.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId");
-
-                    b.HasOne("DataAccess.Model.ToDo", "ToDo")
-                        .WithMany()
-                        .HasForeignKey("ToDoId")
-                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("DataAccess.Model.User", "User")
                         .WithMany()

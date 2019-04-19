@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace WebAPI.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190418062339_Model")]
+    [Migration("20190419093630_Model")]
     partial class Model
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,28 +17,6 @@ namespace WebAPI.Migrations
 #pragma warning disable 612, 618
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.2.2-servicing-10034");
-
-            modelBuilder.Entity("DataAccess.Model.Association", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("ProjectId");
-
-                    b.Property<int>("ToDoId");
-
-                    b.Property<int?>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
-
-                    b.HasIndex("ToDoId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Associations");
-                });
 
             modelBuilder.Entity("DataAccess.Model.Project", b =>
                 {
@@ -65,9 +43,17 @@ namespace WebAPI.Migrations
                         .IsRequired()
                         .HasMaxLength(50);
 
+                    b.Property<int?>("ProjectId");
+
                     b.Property<DateTime?>("StartTime");
 
+                    b.Property<int?>("UserId");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Tasks");
                 });
@@ -98,16 +84,11 @@ namespace WebAPI.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("DataAccess.Model.Association", b =>
+            modelBuilder.Entity("DataAccess.Model.ToDo", b =>
                 {
                     b.HasOne("DataAccess.Model.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId");
-
-                    b.HasOne("DataAccess.Model.ToDo", "ToDo")
-                        .WithMany()
-                        .HasForeignKey("ToDoId")
-                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("DataAccess.Model.User", "User")
                         .WithMany()

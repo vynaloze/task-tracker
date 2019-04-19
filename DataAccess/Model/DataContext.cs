@@ -14,7 +14,5 @@ namespace DataAccess.Model
         public DbSet<Project> Projects { get; set; }
         
         public DbSet<ToDo> Tasks { get; set; }
-        
-        public DbSet<Association> Associations { get; set; }
     }
 }
