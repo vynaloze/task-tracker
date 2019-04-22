@@ -35,6 +35,15 @@ namespace WebAPI.Controllers
             return Forbid();
         }
 
+        // GET api/users/whoami
+        [HttpGet("whoami")]
+        public async Task<ActionResult<IEnumerable<User>>> WhoAmI()
+        {
+            var users = await _userService.GetAll();
+            var user = users.First(u => User.Identity.Name == u.Email);
+            return Ok(user);
+        }
+
         // GET api/users/5
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> Get(int id)
