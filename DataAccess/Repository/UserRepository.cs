@@ -45,6 +45,7 @@ namespace DataAccess.Repository
             oldUser.Email = newUser.Email;
             oldUser.Password = newUser.Password;
             oldUser.Level = newUser.Level;
+            oldUser.ResetPasswordToken = newUser.ResetPasswordToken;
             
             _context.Users.Update(oldUser);
             Save();

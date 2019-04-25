@@ -18,5 +18,16 @@ namespace DataAccess.Model
         
         [Range(1, 5)] 
         public int Level { get; set; }
+        
+        public string ResetPasswordToken { get; set; }
+
+        public User Clone()
+        {
+            return new User
+            {
+                Firstname = this.Firstname, Lastname = this.Lastname, Email = this.Email, Password = this.Password,
+                Level = this.Level, ResetPasswordToken = this.ResetPasswordToken
+            };
+        }
     }
 }

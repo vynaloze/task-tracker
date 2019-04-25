@@ -7,6 +7,7 @@ using DataAccess.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Service.Users;
+using Service.Users.Dto;
 
 namespace WebAPI.Controllers
 {
@@ -169,5 +170,50 @@ namespace WebAPI.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+        
+        // POST api/users/ForgotPassword
+        [AllowAnonymous]
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] string email)
+        {
+            try
+            {
+                Console.WriteLine(email);
+                await _userService.RequestResetPassword(email);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        
+        // POST api/users/ResetPassword
+        [AllowAnonymous]
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest("Invalid model object");
+                }
+
+                var created = await _userService.PerformResetPassword(dto);
+                if (created == false)
+                {
+                    return BadRequest("Invalid or expired token");
+                }
+                
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                return StatusCode(500, "Internal server error");
+            }
+        }   
     }
 }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using DataAccess.Model;
+using Service.Users.Dto;
 
 namespace Service.Users
 {
@@ -12,5 +13,7 @@ namespace Service.Users
         Task<User>RegisterUser(User user);
         Task<bool>SaveUserData(int id, User user);
         Task<bool> DeleteUser(int id);
+        Task<bool> RequestResetPassword(string email);
+        Task<bool> PerformResetPassword(ResetPasswordDto dto);
     }
 }

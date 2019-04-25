@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using DataAccess.Model;
 using DataAccess.Repository;
+using Service.Users.Dto;
+using Service.Users.Util;
 
 namespace Service.Users
 {
@@ -76,6 +78,50 @@ namespace Service.Users
 
                 _userRepository.DeleteUser(id);
                 return true;
+            });
+        }
+
+        public async Task<bool> RequestResetPassword(string email)
+        {
+            return await Task.Run(() =>
+            {
+                var user = _userRepository.GetUsers().FirstOrDefault(u => u.Email.Equals(email));
+                if (user == null)
+                {
+                    return false;
+                }
+
+                var token = TokenUtil.GenerateToken();
+                var newUser = user.Clone();
+                newUser.ResetPasswordToken = token;
+                _userRepository.UpdateUser(user, newUser);
+
+                Mailer.SendResetRequest(user.Email, token);
+
+                return true;
+            });
+        }
+
+        public async Task<bool> PerformResetPassword(ResetPasswordDto dto)
+        {
+            return await Task.Run(() =>
+            {
+                var user = _userRepository.GetUsers().FirstOrDefault(u => u.Email.Equals(dto.Email));
+                if (user == null)
+                {
+                    return false;
+                }
+
+                if (TokenUtil.IsValid(dto.Token) && user.ResetPasswordToken.Equals(dto.Token))
+                {
+                    var newUser = user.Clone();
+                    newUser.Password = dto.Password;
+                    newUser.ResetPasswordToken = null;
+                    _userRepository.UpdateUser(user, newUser);
+                    return true;
+                }
+
+                return false;
             });
         }
     }
