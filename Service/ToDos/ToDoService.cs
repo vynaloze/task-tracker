@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using DataAccess.Model;
 using DataAccess.Repository;
@@ -22,12 +23,33 @@ namespace Service.ToDos
 
         public async Task<IEnumerable<ToDo>> Get()
         {
-            return await Task.Run(() => _toDoRepository.GetToDos());
+            return await Task.Run(() =>
+                _toDoRepository.GetToDos()
+                    .Select(toDo =>
+                    {
+                        if (toDo?.User != null)
+                        {
+                            toDo.User = HideSensitiveData(toDo.User);
+                        }
+
+                        return toDo;
+                    })
+                    .ToList()
+            );
         }
 
         public async Task<ToDo> Get(int id)
         {
-            return await Task.Run(() => _toDoRepository.GetToDo(id));
+            return await Task.Run(() =>
+            {
+                var toDo = _toDoRepository.GetToDo(id);
+                if (toDo?.User != null)
+                {
+                    toDo.User = HideSensitiveData(toDo.User);
+                }
+
+                return toDo;
+            });
         }
 
         public async Task<ToDo> Create(ToDo toDo)
@@ -49,6 +71,7 @@ namespace Service.ToDos
             {
                 return false;
             }
+
             await Task.Run(() => _toDoRepository.DeleteTodo(id));
             return true;
         }
@@ -128,6 +151,15 @@ namespace Service.ToDos
 
             await Task.Run(() => _toDoRepository.UpdateTodo(toDo, newToDo));
             return true;
+        }
+
+        private User HideSensitiveData(User user)
+        {
+            var result = user.Clone();
+            result.Password = "#####";
+            result.Level = -999;
+            result.ResetPasswordToken = "#####";
+            return result;
         }
     }
 }

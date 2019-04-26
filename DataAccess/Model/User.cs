@@ -26,7 +26,7 @@ namespace DataAccess.Model
             return new User
             {
                 Firstname = this.Firstname, Lastname = this.Lastname, Email = this.Email, Password = this.Password,
-                Level = this.Level, ResetPasswordToken = this.ResetPasswordToken
+                Level = this.Level, ResetPasswordToken = this.ResetPasswordToken, Id = this.Id
             };
         }
     }

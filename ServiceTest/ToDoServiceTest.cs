@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
 using DataAccess.Model;
@@ -72,7 +73,7 @@ namespace ServiceTest
             var end = DateTime.Parse("1/11/2001 14:00:00");
             _toDoRepositoryMock.Setup(r => r.UpdateTodo(It.IsAny<ToDo>(), It.IsAny<ToDo>())).Verifiable();
             // then
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
                 await _toDoService.SetWorkingTime(8, start, end));
             _toDoRepositoryMock.Verify(r => r.UpdateTodo(It.IsAny<ToDo>(), It.IsAny<ToDo>()), Times.Never);
         }
@@ -107,7 +108,7 @@ namespace ServiceTest
             // given
             _toDoRepositoryMock.Setup(r => r.UpdateTodo(It.IsAny<ToDo>(), It.IsAny<ToDo>())).Verifiable();
             // then
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
                 await _toDoService.AssignToUser(8, user.Id));
             _toDoRepositoryMock.Verify(r => r.UpdateTodo(It.IsAny<ToDo>(), It.IsAny<ToDo>()), Times.Never);
         }
@@ -118,7 +119,7 @@ namespace ServiceTest
             // given
             _toDoRepositoryMock.Setup(r => r.UpdateTodo(toDo1, It.IsAny<ToDo>())).Verifiable();
             // then
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
                 await _toDoService.AssignToUser(toDo1.Id, 11));
             _toDoRepositoryMock.Verify(r => r.UpdateTodo(toDo1, It.IsAny<ToDo>()), Times.Never);
         }
@@ -140,7 +141,7 @@ namespace ServiceTest
             // given
             _toDoRepositoryMock.Setup(r => r.UpdateTodo(It.IsAny<ToDo>(), It.IsAny<ToDo>())).Verifiable();
             // then
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
                 await _toDoService.AssociateWithProject(8, project.Id));
             _toDoRepositoryMock.Verify(r => r.UpdateTodo(It.IsAny<ToDo>(), It.IsAny<ToDo>()), Times.Never);
         }
@@ -151,7 +152,7 @@ namespace ServiceTest
             // given
             _toDoRepositoryMock.Setup(r => r.UpdateTodo(toDo1, It.IsAny<ToDo>())).Verifiable();
             // then
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            await Assert.ThrowsAsync<KeyNotFoundException>(async () =>
                 await _toDoService.AssociateWithProject(toDo1.Id, 11));
             _toDoRepositoryMock.Verify(r => r.UpdateTodo(toDo1, It.IsAny<ToDo>()), Times.Never);
         }
