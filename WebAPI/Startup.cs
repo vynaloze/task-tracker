@@ -27,25 +27,28 @@ namespace WebAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            
+
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo{ Title = "ToDo Tracker API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "ToDo Tracker API", Version = "v1"});
                 c.AddSecurityDefinition("basic", new OpenApiSecurityScheme());
             });
-            
+
             var connection = "Data Source=tasktracker.db";
-            services.AddDbContext<DataContext>
-                (options => options.UseSqlite(connection, b => b.MigrationsAssembly("WebAPI")));
+            services.AddDbContext<DataContext>(options =>
+            {
+                options.UseSqlite(connection, b => b.MigrationsAssembly("WebAPI"));
+                options.EnableSensitiveDataLogging();
+            });
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IProjectRepository, ProjectRepository>();
             services.AddScoped<IToDoRepository, ToDoRepository>();
-            
+
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IToDoService, ToDoService>();
-                
+
             services.AddAuthentication("BasicAuthentication")
-                .AddScheme<AuthenticationSchemeOptions,BasicAuthenticationHandler>("BasicAuthentication",null);
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,17 +68,13 @@ namespace WebAPI
 
             app.UseHttpsRedirection();
             app.UseMvc();
-            
+
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), 
             // specifying the Swagger JSON endpoint.
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDo Tracker API V1");
-            });
-
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "ToDo Tracker API V1"); });
         }
     }
 }

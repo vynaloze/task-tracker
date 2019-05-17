@@ -90,6 +90,7 @@ namespace Service.ToDos
             }
 
             var newToDo = toDo.Clone();
+            newToDo.User = _userRepository.GetUser(toDo.User.Id);
             newToDo.StartTime = start;
             newToDo.EndTime = end;
 
@@ -106,6 +107,7 @@ namespace Service.ToDos
             }
 
             var newToDo = toDo.Clone();
+            newToDo.User = _userRepository.GetUser(toDo.User.Id);
             if (projectId.HasValue)
             {
                 var dbProject = _projectRepository.GetProject(projectId.Value);
